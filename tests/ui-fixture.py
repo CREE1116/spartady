@@ -4,7 +4,10 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import pymupdf
 from desktop.backend.server import DesktopEngine
 root=Path(sys.argv[1]);root.mkdir(parents=True,exist_ok=True)
-pdf=pymupdf.open();page=pdf.new_page();page.insert_text((50,60),'Encryption converts plaintext into ciphertext.');file=root/unicodedata.normalize('NFD','한글교안.pdf');pdf.save(file);pdf.close()
+pdf=pymupdf.open()
+for number in range(70):
+ page=pdf.new_page();page.insert_text((50,60),f'Encryption converts plaintext into ciphertext. Lesson {number+1}.')
+file=root/unicodedata.normalize('NFD','한글교안.pdf');pdf.save(file);pdf.close()
 e=DesktopEngine(root/'data');b=e.dispatch('import',{'paths':[str(file)]});unit=b['units'][0]
 with e.db:
  e.documents[0]['name']=unicodedata.normalize('NFD',e.documents[0]['name']);e.brain.store.set_metadata('app_documents',e.documents)
