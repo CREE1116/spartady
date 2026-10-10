@@ -78,7 +78,7 @@ class OpenAIOAuth:
             start = time.monotonic()
             try:
                 result = subprocess.run(command, input=system+'\n\n'+prompt,
-                    cwd=directory, env=env, text=True, capture_output=True, timeout=self.timeout)
+                    cwd=directory, env=env, text=True, encoding='utf-8', capture_output=True, timeout=self.timeout)
             except subprocess.TimeoutExpired:
                 raise TimeoutError('OpenAI OAuth extraction timeout') from None
             except OSError:
@@ -125,7 +125,7 @@ class LocalLMX:
             'model_bytes': path.stat().st_size, 'model_mtime_ns': path.stat().st_mtime_ns,
             'options': {k:v for k,v in os.environ.items() if k.startswith('SPARTADY_LMX_')}}
         self.process = subprocess.Popen([str(binary), str(path)], stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE, text=True, bufsize=1)
+            stdout=subprocess.PIPE, text=True, encoding='utf-8', bufsize=1)
 
         self.responses=queue.Queue()
         def read_responses():

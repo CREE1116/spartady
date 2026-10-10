@@ -94,4 +94,11 @@ class ProductTests(unittest.TestCase):
   self.engine.save_settings({'knowledge_model':{'provider':'local_lmx','model_path':str(alias)}})
   models=self.engine.local_models()
   self.assertEqual(len(models),1);self.assertEqual(models[0]['path'],self.engine.config()['knowledge_model']['model_path']);self.assertEqual(models[0]['name'],'Qwen3.5 0.8B · Q4_K_M')
+ def test_stdio_bridge_supports_korean_with_non_utf8_system_encoding(self):
+  import os,subprocess
+  doc=self.import_pdf()['documents'][0];self.engine.documents[0]['title']='한글 교안';self.engine.persist_documents()
+  requests=[{'id':1,'method':'bootstrap','args':{}},{'id':2,'method':'save_notebook','args':{'document_id':doc['id'],'page':1,'revision':0,'text':'# 한글 필기'}},{'id':3,'method':'shutdown','args':{}}]
+  process=subprocess.run([sys.executable,str(Path(__file__).resolve().parents[1]/'desktop/backend/server.py'),'--data',str(self.engine.directory)],input=''.join(json.dumps(r,ensure_ascii=False)+'\n' for r in requests),capture_output=True,text=True,encoding='utf-8',env=dict(os.environ,PYTHONIOENCODING='cp1252'),timeout=30)
+  self.assertEqual(process.returncode,0,process.stderr);responses=[json.loads(line) for line in process.stdout.splitlines()]
+  self.assertEqual(responses[0]['result']['documents'][0]['title'],'한글 교안');self.assertEqual(responses[1]['result']['text'],'# 한글 필기')
 if __name__=='__main__':unittest.main()

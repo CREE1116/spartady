@@ -64,3 +64,5 @@ DMG는 Apple Silicon macOS에서, NSIS EXE는 Windows x64에서 각각 빌드합
 macOS의 한글 파일명은 NFC 키로 통일합니다. 기존 문서 ID·파일 경로·원문·완료 기록을 바꾸지 않고 문서 이름의 비교 키를 보정하므로 교안 선택·시험 범위·원문 링크·페이지에 연결된 기록을 유지합니다.
 
 필기는 Tiptap의 단일 편집 면에서 Markdown 입력 규칙을 적용하고 Markdown으로 직렬화하여 기존 필기·페이지·시간 출처 저장 계층에 전달합니다. 표와 체크리스트를 지원합니다. 대화는 react-markdown/remark-gfm으로 표시하며 원문 링크는 검증된 출처 메타데이터로 별도 제공합니다.
+
+Electron↔Python, Python↔로컬 LMX·전사 엔진의 JSON 통신은 Windows 시스템 언어와 관계없이 UTF-8로 고정합니다. 한글 교안과 필기의 시작·저장 경로를 두 플랫폼의 UI 검사에 포함합니다.

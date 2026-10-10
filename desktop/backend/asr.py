@@ -1,5 +1,7 @@
 """Qwen3-ASR worker; timestamps identify capture intervals, not word alignment."""
 import contextlib,json,sys
+for stream in (sys.stdin,sys.stdout,sys.stderr):
+ if hasattr(stream,'reconfigure'):stream.reconfigure(encoding='utf-8')
 
 def main():
  request=json.load(sys.stdin)

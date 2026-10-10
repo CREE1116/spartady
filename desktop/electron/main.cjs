@@ -23,7 +23,7 @@ function startWorker(){
   if(!fs.existsSync(executable))throw Error('학습 엔진을 찾지 못했습니다. 앱을 다시 설치해주세요.');
   let key=process.env.OPENAI_API_KEY;const keyFile=path.join(app.getPath('userData'),'api-key.enc');
   if(fs.existsSync(keyFile)&&safeStorage.isEncryptionAvailable())key=safeStorage.decryptString(fs.readFileSync(keyFile));
-  worker=spawn(executable,fs.existsSync(bundled)?['--data',app.getPath('userData')]:[path.join(root,'desktop/backend/server.py'),'--data',app.getPath('userData')],{cwd:app.getPath('userData'),detached:process.platform!=='win32',stdio:['pipe','pipe','pipe'],env:{...process.env,PYTHONUNBUFFERED:'1',SPARTADY_RESOURCE_DIR:resourceDir,...(key?{OPENAI_API_KEY:key}:{})}});
+  worker=spawn(executable,fs.existsSync(bundled)?['--data',app.getPath('userData')]:[path.join(root,'desktop/backend/server.py'),'--data',app.getPath('userData')],{cwd:app.getPath('userData'),detached:process.platform!=='win32',stdio:['pipe','pipe','pipe'],env:{...process.env,PYTHONUNBUFFERED:'1',PYTHONUTF8:'1',PYTHONIOENCODING:'utf-8',SPARTADY_RESOURCE_DIR:resourceDir,...(key?{OPENAI_API_KEY:key}:{})}});
   readline.createInterface({input:worker.stdout}).on('line',line=>{try{const r=JSON.parse(line);if(r.event){window?.webContents.send('progress',r);return;}const p=pending.get(r.id);if(p){clearTimeout(p.timer);pending.delete(r.id);r.error?p.reject(Error(r.error)):p.resolve(r.result);}}catch{console.error('Unexpected engine output');}});
   worker.stderr.on('data',data=>{fs.appendFileSync(path.join(app.getPath('userData'),'engine.log'),data);});
   const failed=()=>{for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('학습 엔진 연결이 끊겼습니다. 앱을 다시 열어주세요.'));}pending.clear();};

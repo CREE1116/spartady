@@ -2,6 +2,9 @@
 import argparse,contextlib,datetime as dt,json,os,sqlite3,subprocess,sys,uuid,shutil,unicodedata
 from pathlib import Path
 from zoneinfo import ZoneInfo
+# Electron and native models exchange UTF-8 JSON on every operating system.
+for stream in (sys.stdin,sys.stdout,sys.stderr):
+    if hasattr(stream,'reconfigure'):stream.reconfigure(encoding='utf-8')
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT))
 from desktop.backend.sessions import LearningSessions
@@ -272,7 +275,7 @@ class DesktopEngine(LearningSessions):
         checkpoint('processing')
         try:
             result=subprocess.run([str(self.directory/'asr-runtime'/('Scripts/python.exe' if sys.platform=='win32' else 'bin/python')),str(resources()/'asr.py')],
-                input=json.dumps({'path':str(file),'model':self.config()['asr_model']}),text=True,capture_output=True,timeout=300,env=dict(os.environ,HF_HOME=str(self.directory/'hf-cache')))
+                input=json.dumps({'path':str(file),'model':self.config()['asr_model']}),text=True,encoding='utf-8',capture_output=True,timeout=300,env=dict(os.environ,HF_HOME=str(self.directory/'hf-cache')))
         except Exception:
             checkpoint('failed');raise
         if result.returncode:
