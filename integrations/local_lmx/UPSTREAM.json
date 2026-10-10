@@ -1,0 +1,42 @@
+{
+  "repository": "Loom",
+  "revision": "ca9f8f021746b6674ad801dff48c9231c8267a0b",
+  "files": [
+    {
+      "source": "loom-core/src/models/lmx_native.rs",
+      "sha256": "2e959d908d4bde495bd79556a85fbab0a468ba4d5eaa093b772ab3b7622220d8",
+      "modifications": "Exclude upstream test fixtures; local backend initialization and SPARTADY env names for engine wrapper"
+    },
+    {
+      "source": "loom-core/src/models/lmx_native_file.rs",
+      "sha256": "d0261eb4bbea5260dd437a3537698c0f8eb331209374f58e3b9993daa570c150",
+      "modifications": "Exclude upstream test fixtures; local backend initialization and SPARTADY env names for engine wrapper"
+    },
+    {
+      "source": "loom-core/src/models/lmx_engine.rs",
+      "sha256": "02be2085c1a20154b3baffc47e069fdf4297db900a74096e745040154fb57e04",
+      "modifications": "Exclude upstream test fixtures; local backend initialization and SPARTADY env names for engine wrapper"
+    },
+    {
+      "source": "loom-core/native/lmx/engine.cpp",
+      "sha256": "c195441fde9f01cffcc7f1f76ecefffe4f08d44aa02ff8817a29bf7210c32962",
+      "modifications": "none"
+    },
+    {
+      "source": "loom-core/src/models/lmx_native_import.rs",
+      "sha256": "3a27bb96e4df38115cc828e76a5f8b932104ff41f82b427517ec0cfd0a490a60",
+      "modifications": "Product-owned import CLI; exclude upstream tests; local no-follow helper subset"
+    },
+    {
+      "source": "loom-core/src/models/model_package.rs",
+      "sha256": "baac8fd2ad9d34687246c9b4f6914a3c99f4daefb3e6536e2fd20ffe7858895f",
+      "modifications": "Product-owned import CLI; exclude upstream tests; local no-follow helper subset"
+    },
+    {
+      "source": "loom-core/src/models/local.rs",
+      "sha256": "a7c82e6cefaffeb6d0fe389e80b31c223dc21bac491b369ef2744ae67911fd6b",
+      "modifications": "Product-owned import CLI; exclude upstream tests; local no-follow helper subset"
+    }
+  ],
+  "runtime_dependency_on_loom": false
+}

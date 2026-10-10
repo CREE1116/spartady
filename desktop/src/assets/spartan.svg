@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none" role="img" aria-labelledby="title"><title id="title">SPARTADY 스파르타 투구</title>
+  <path d="M51 87C55 42 83 20 128 18c45 2 73 24 77 69l-22 13c-10-23-31-34-55-34s-45 11-55 34L51 87Z" fill="#F0F0F0"/>
+  <path d="m72 55 12 19m17-40 7 33m20-39v36m27-30-7 33m36-12-12 19" stroke="#171717" stroke-width="8" stroke-linecap="round"/>
+  <path d="M73 114c0-34 20-51 55-51s55 17 55 51l15 79-36 37-22-55h-24l-22 55-36-37 15-79Z" fill="#E4E4E4"/>
+  <path d="M80 113l38 12-9 18-29-10v-20Zm96 0-38 12 9 18 29-10v-20Z" fill="#171717"/>
+  <path d="m121 104 14 0 6 64-13 30-13-30 6-64Z" fill="#A8A8A8"/>
+  <path d="m74 150 18 13-10 34-13-8 5-39Zm108 0-18 13 10 34 13-8-5-39Z" fill="#B8B8B8"/>
+</svg>

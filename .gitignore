@@ -1,0 +1,17 @@
+node_modules/
+.venv/
+.asr-venv/
+__pycache__/
+*.pyc
+*.sqlite*
+*.lmx
+*.safetensors
+*.gguf
+.env*
+desktop/dist/
+desktop/release/
+desktop/runtime/
+integrations/local_lmx/target/
+.test-data/
+build/
+*.spec

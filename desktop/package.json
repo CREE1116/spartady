@@ -1,0 +1,74 @@
+{
+  "name": "spartady-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SPARTADY \uad50\uc548\uacfc \uc9c0\uc2dd \uadf8\ub798\ud504 \uae30\ubc18 \ud559\uc2b5",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "start": "npm run build && electron .",
+    "test": "node tests/electron-smoke.cjs",
+    "package": "npm run build && electron-builder --publish never",
+    "runtime": "../.venv/bin/python scripts/package-runtime.py",
+    "package:mac": "npm run build && electron-builder --mac dmg --arm64 --publish never",
+    "package:win": "npm run build && electron-builder --win nsis --x64 --publish never"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "pdfjs-dist": "^6.4.299",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "electron": "^41.0.0",
+    "electron-builder": "^26.0.0",
+    "playwright": "^1.56.0",
+    "vite": "^6.4.0"
+  },
+  "build": {
+    "appId": "study.spartady.desktop",
+    "productName": "SPARTADY",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "electron/main.cjs",
+      "electron/preload.cjs",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.education",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "\uac15\uc758 \uc74c\uc131\uc744 \uad50\uc548\uacfc \uc5f0\uacb0\ud574 \uc804\uc0ac\ud569\ub2c8\ub2e4."
+      },
+      "icon": "resources/icon.icns",
+      "target": [
+        "dmg"
+      ]
+    },
+    "extraResources": [
+      {
+        "from": "runtime",
+        "to": "runtime"
+      }
+    ],
+    "artifactName": "SPARTADY-${version}-${os}-${arch}.${ext}",
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "resources/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    }
+  },
+  "license": "AGPL-3.0-only"
+}
