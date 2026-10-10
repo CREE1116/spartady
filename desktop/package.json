@@ -1,6 +1,6 @@
 {
   "name": "spartady-desktop",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "description": "SPARTADY 교안과 지식 그래프 기반 학습",
   "main": "electron/main.cjs",

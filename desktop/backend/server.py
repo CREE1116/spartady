@@ -23,7 +23,7 @@ def parse_json(text):
 
 class DesktopEngine(LearningSessions):
     def __init__(self,directory):
-        self.directory=Path(directory);self.directory.mkdir(parents=True,exist_ok=True)
+        self.directory=Path(directory).resolve();self.directory.mkdir(parents=True,exist_ok=True)
         db=self.directory/'knowledge.sqlite'
         self.brain=SecondBrain(db);self.backend=None;self.backend_key=None;self.backends={}
         self.db=self.brain.store.db
@@ -56,6 +56,10 @@ class DesktopEngine(LearningSessions):
         conf=dict(self.defaults,**self.brain.store.get_metadata('app_settings',{}))
         previous={k:conf[k] for k in ('provider','model','model_path')}
         conf.setdefault('knowledge_model',dict(previous));conf.setdefault('learning_model',dict(previous))
+        for role in ('knowledge_model','learning_model'):
+            profile=conf[role]
+            if profile['provider']=='local_lmx' and profile.get('model_path'):
+                conf[role]=dict(profile,model_path=str(Path(profile['model_path']).expanduser().resolve()))
         return conf
     def get_backend(self,role='learning'):
         if role not in {'knowledge','learning'}:raise ValueError('Invalid model role')

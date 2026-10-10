@@ -83,9 +83,15 @@ class ProductTests(unittest.TestCase):
   with patch('desktop.backend.server.install_model',return_value=result):
    self.engine.dispatch('install_model',{'repo':'fixture/model','filename':'fixture.gguf'})
   conf=self.engine.config()
-  self.assertEqual(conf['knowledge_model']['model_path'],str(model));self.assertEqual(conf['learning_model']['model_path'],str(model))
+  self.assertEqual(conf['knowledge_model']['model_path'],str(model.resolve()));self.assertEqual(conf['learning_model']['model_path'],str(model.resolve()))
   self.engine.save_settings({'learning_model':{'provider':'openai_api','model':'custom-learning'}})
   other=self.root/'other.lmx';other.write_bytes(b'fixture')
   with patch('desktop.backend.server.install_model',return_value={'path':str(other)}):self.engine.dispatch('install_model',{})
-  conf=self.engine.config();self.assertEqual(conf['knowledge_model']['model_path'],str(model));self.assertEqual(conf['learning_model']['model'],'custom-learning')
+  conf=self.engine.config();self.assertEqual(conf['knowledge_model']['model_path'],str(model.resolve()));self.assertEqual(conf['learning_model']['model'],'custom-learning')
+ def test_installed_model_is_not_duplicated_by_path_alias(self):
+  folder=self.engine.directory/'models';folder.mkdir();model=folder/'Qwen3.5-0.8B-Q4_K_M.lmx';model.write_bytes(b'fixture')
+  alias=folder/'..'/'models'/model.name
+  self.engine.save_settings({'knowledge_model':{'provider':'local_lmx','model_path':str(alias)}})
+  models=self.engine.local_models()
+  self.assertEqual(len(models),1);self.assertEqual(models[0]['path'],self.engine.config()['knowledge_model']['model_path']);self.assertEqual(models[0]['name'],'Qwen3.5 0.8B · Q4_K_M')
 if __name__=='__main__':unittest.main()
