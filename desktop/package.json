@@ -1,6 +1,6 @@
 {
   "name": "spartady-desktop",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "SPARTADY \uad50\uc548\uacfc \uc9c0\uc2dd \uadf8\ub798\ud504 \uae30\ubc18 \ud559\uc2b5",
   "main": "electron/main.cjs",
