@@ -31,7 +31,7 @@ function startWorker(){
 }
 app.whenReady().then(()=>{
   fs.mkdirSync(app.getPath('userData'),{recursive:true});startWorker();
-  window=new BrowserWindow({width:1460,height:960,minWidth:1000,minHeight:700,title:'SPARTADY',backgroundColor:'#111111',titleBarStyle:process.platform==='darwin'?'hiddenInset':'default',trafficLightPosition:{x:18,y:20},webPreferences:{preload:path.join(__dirname,'preload.cjs'),nodeIntegration:false,contextIsolation:true,sandbox:true}});
+  window=new BrowserWindow({show:!process.env.SPARTADY_TEST,width:1460,height:960,minWidth:1000,minHeight:700,title:'SPARTADY',backgroundColor:'#111111',titleBarStyle:process.platform==='darwin'?'hiddenInset':'default',trafficLightPosition:{x:18,y:20},webPreferences:{preload:path.join(__dirname,'preload.cjs'),nodeIntegration:false,contextIsolation:true,sandbox:true}});
   window.webContents.setWindowOpenHandler(()=>({action:'deny'}));
   window.webContents.on('will-navigate',(event)=>event.preventDefault());
   session.defaultSession.setPermissionRequestHandler((contents,permission,callback,details)=>callback(contents===window.webContents&&permission==='media'&&details.mediaTypes?.every(t=>t==='audio')));
