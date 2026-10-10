@@ -1,9 +1,13 @@
 import React,{useEffect,useRef,useState} from 'react';
-import Markdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import {useEditor,EditorContent} from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import {Markdown} from '@tiptap/markdown';
+import {TableKit} from '@tiptap/extension-table';
+import TaskList from '@tiptap/extension-task-list';
+import TaskItem from '@tiptap/extension-task-item';
 import {Check,Loader2} from 'lucide-react';
 export default function Notebook({document,page,elapsed,sessionId}){
-  const [text,setText]=useState(''),[preview,setPreview]=useState(false),[status,setStatus]=useState('불러오는 중'),[error,setError]=useState('');
+  const [status,setStatus]=useState('불러오는 중'),[error,setError]=useState('');
   const state=useRef({text:'',revision:0,dirty:false,saving:false,ready:false}),timer=useRef(),mounted=useRef(true);
   const draftKey='spartady-notebook:'+document?.id;
   const save=async()=>{
@@ -17,22 +21,27 @@ export default function Notebook({document,page,elapsed,sessionId}){
     }catch(e){failed=true;if(mounted.current){setError(e.message);setStatus('저장 실패');}}
     finally{s.saving=false;if(s.dirty&&!failed)timer.current=setTimeout(save,1800);}
   };
+  const change=value=>{
+    const s=state.current;s.text=value;s.dirty=true;s.context={page,time_ms:elapsed,session_id:sessionId};setStatus('변경됨');
+    localStorage.setItem(draftKey,JSON.stringify({text:value,revision:s.revision}));clearTimeout(timer.current);timer.current=setTimeout(save,1600);
+  };
+  const context=useRef();context.current={page,time_ms:elapsed,session_id:sessionId};
+  const changeRef=useRef();changeRef.current=change;
+  const editor=useEditor({extensions:[StarterKit.configure({link:{openOnClick:false}}),TableKit,TaskList,TaskItem.configure({nested:true}),Markdown],content:'',contentType:'markdown',editable:false,
+    editorProps:{attributes:{role:'textbox','aria-label':'강의 마크다운 필기','aria-multiline':'true',spellcheck:'false'},handleKeyDown:(_,event)=>{if((event.metaKey||event.ctrlKey)&&event.key==='s'){event.preventDefault();save();return true;}return false;}},
+    onUpdate:({editor})=>{state.current.context=context.current;changeRef.current(editor.getMarkdown());}});
   useEffect(()=>{
     mounted.current=true;if(!document){setStatus('교안을 선택해주세요');return;}
     window.spartady.call('notebook',{document_id:document.id}).then(result=>{
       if(!mounted.current)return;
       const s=state.current;s.revision=result.revision;s.text=result.text;s.ready=true;
       try{const draft=JSON.parse(localStorage.getItem(draftKey)||'null');if(draft&&draft.revision===result.revision){s.text=draft.text;s.dirty=draft.text!==result.text;}}catch{}
-      s.context={page,time_ms:elapsed,session_id:sessionId};setText(s.text);setStatus(s.dirty?'변경됨':'저장됨');if(s.dirty)timer.current=setTimeout(save,1800);
+      s.context={page,time_ms:elapsed,session_id:sessionId};editor?.commands.setContent(s.text,{contentType:'markdown',emitUpdate:false});editor?.setEditable(true);setStatus(s.dirty?'변경됨':'저장됨');if(s.dirty)timer.current=setTimeout(save,1800);
     }).catch(e=>{setError(e.message);setStatus('불러오기 실패');});
     return()=>{mounted.current=false;clearTimeout(timer.current);save();};
-  },[document?.id]);
-  const change=value=>{
-    const s=state.current;s.text=value;s.dirty=true;s.context={page,time_ms:elapsed,session_id:sessionId};setText(value);setStatus('변경됨');
-    localStorage.setItem(draftKey,JSON.stringify({text:value,revision:s.revision}));clearTimeout(timer.current);timer.current=setTimeout(save,1600);
-  };
-  return <section className="notebook"><header><strong>강의 필기</strong><div><button className={!preview?'active':''} onClick={()=>setPreview(false)}>작성</button><button className={preview?'active':''} onClick={()=>setPreview(true)}>미리보기</button></div></header>
-    {preview?<div className="markdown-body"><Markdown remarkPlugins={[remarkGfm]} skipHtml>{text||'*아직 작성한 필기가 없습니다.*'}</Markdown></div>:<textarea aria-label="강의 마크다운 필기" spellCheck={false} placeholder={'# 강의 필기\n\n페이지에 나누지 않고, 강의 전체를 이어서 기록하세요.\n\n## 중요한 내용\n- \n\n## 질문\n- '} value={text} disabled={!state.current.ready} onChange={e=>change(e.target.value)} onKeyDown={e=>{if((e.metaKey||e.ctrlKey)&&e.key==='s'){e.preventDefault();save();}if(e.key==='Tab'){e.preventDefault();const el=e.currentTarget,start=el.selectionStart,end=el.selectionEnd;change(text.slice(0,start)+'  '+text.slice(end));requestAnimationFrame(()=>{el.selectionStart=el.selectionEnd=start+2;});}}}/>}
+  },[document?.id,editor]);
+  return <section className="notebook"><header><strong>강의 필기</strong><small># 제목 · **굵게** · - 목록</small></header>
+    <EditorContent editor={editor} className="notebook-editor markdown-body"/>
     <footer><span>{status==='저장 중'?<Loader2 size={12} className="spin"/>:status==='저장됨'?<Check size={12}/>:null}{error||status}</span><small>Markdown · 자동 저장</small></footer>
   </section>;
 }

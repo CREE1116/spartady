@@ -76,4 +76,16 @@ class ProductTests(unittest.TestCase):
   self.engine.grade({'quiz_id':q['id'],'answers':[x['correct'] for x in private['questions']]})
   record=self.engine.dispatch('learning_session',{'unit_id':unit['id'],'session_id':session['id']})
   self.assertEqual(record['status'],'completed');self.assertTrue(record['quizzes'][0]['passed']);self.assertEqual(record['last_quiz']['correct'],3)
+ def test_first_model_download_configures_empty_roles_and_preserves_existing_selection(self):
+  from unittest.mock import patch
+  model=self.root/'downloaded.lmx';model.write_bytes(b'fixture')
+  result={'name':'Qwen3.5 0.8B','path':str(model)}
+  with patch('desktop.backend.server.install_model',return_value=result):
+   self.engine.dispatch('install_model',{'repo':'fixture/model','filename':'fixture.gguf'})
+  conf=self.engine.config()
+  self.assertEqual(conf['knowledge_model']['model_path'],str(model));self.assertEqual(conf['learning_model']['model_path'],str(model))
+  self.engine.save_settings({'learning_model':{'provider':'openai_api','model':'custom-learning'}})
+  other=self.root/'other.lmx';other.write_bytes(b'fixture')
+  with patch('desktop.backend.server.install_model',return_value={'path':str(other)}):self.engine.dispatch('install_model',{})
+  conf=self.engine.config();self.assertEqual(conf['knowledge_model']['model_path'],str(model));self.assertEqual(conf['learning_model']['model'],'custom-learning')
 if __name__=='__main__':unittest.main()

@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT))
 from desktop.backend.sessions import LearningSessions
-from desktop.backend.models import install_model,setup_asr,native_binary,resources
+from desktop.backend.models import install_model,setup_asr,native_binary,resources,model_name
 from engine.second_brain import SecondBrain
 from engine.second_brain.providers import create_backend
 from engine.second_brain.curriculum import plan as graph_plan
@@ -68,7 +68,7 @@ class DesktopEngine(LearningSessions):
         for role in ('knowledge','learning'):
             path=self.config()[role+'_model'].get('model_path')
             if path:folders.add(Path(path).expanduser().parent)
-        return [{'name':p.stem,'path':str(p)} for folder in sorted(folders) if folder.is_dir()
+        return [{'name':model_name(p),'path':str(p)} for folder in sorted(folders) if folder.is_dir()
                 for p in sorted(folder.glob('*.lmx')) if p.is_file()]
 
     def bootstrap(self):
@@ -347,7 +347,16 @@ class DesktopEngine(LearningSessions):
             return True
         if method=='pdf_path':return {'path':self.document(args['id'])['path']}
         if method=='note':return self.capture(args,'note')
-        if method=='install_model':return install_model(self.directory,args,emit)
+        if method=='install_model':
+            result=install_model(self.directory,args,emit)
+            # A first install makes both roles usable; preserve already selected models.
+            settings=self.config();updates={}
+            for role in ('knowledge_model','learning_model'):
+                profile=settings[role]
+                if profile['provider']=='local_lmx' and not Path(profile.get('model_path','')).expanduser().is_file():
+                    updates[role]=dict(profile,model_path=result['path'])
+            if updates:self.save_settings(updates)
+            return result
         if method=='setup_asr':return setup_asr(self.directory,emit)
         if method=='set_api_key':
             os.environ['OPENAI_API_KEY']=args['key'];return {'saved':True}

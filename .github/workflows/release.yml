@@ -50,7 +50,7 @@ jobs:
         run: npm ci
       - name: Build and smoke-test UI
         working-directory: desktop
-        run: npm run build && node ../tests/installer-smoke.cjs
+        run: npm run build && node ../tests/installer-smoke.cjs && node ../tests/learning-ui.cjs
       - name: Package installer
         working-directory: desktop
         env:

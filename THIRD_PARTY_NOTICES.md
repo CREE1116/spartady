@@ -7,3 +7,5 @@
 - PyMuPDF: AGPL-3.0 or commercial license. This repository uses the AGPL distribution; a proprietary distribution requires appropriate licensing review or replacement. SPARTADY product source is offered under AGPL-3.0; vendored Apache-2.0 files retain their original license.
 - OR-Tools: Apache-2.0; scikit-learn: BSD-3-Clause; NetworkX: BSD-3-Clause; Pillow: HPND; Hugging Face Hub: Apache-2.0; PyInstaller: GPL-2.0 with bootloader exception.
 - Model weights are not redistributed. Each selected Hugging Face repository supplies its own license and terms; README and license files are retained with downloads.
+
+- Tiptap editor and ProseMirror: MIT; local Markdown editing and serialization. React Markdown, remark-gfm: MIT.

@@ -10,6 +10,7 @@ __pycache__/
 .env*
 desktop/dist/
 desktop/release/
+desktop/release-*/
 desktop/runtime/
 integrations/local_lmx/target/
 .test-data/
