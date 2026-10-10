@@ -14,19 +14,22 @@ def install_model(directory,args,progress):
  info=HfApi().model_info(repo,revision=revision);commit=info.sha
  folder=Path(directory)/'model-downloads'/repo.replace('/','--')/commit
  progress({'event':'model','stage':'config','repo':repo})
- config_path=hf_hub_download(repo,'config.json',revision=commit,local_dir=folder)
- config=json.loads(Path(config_path).read_text())
- supported={'qwen2','qwen3','qwen3_moe','llama','mistral'}
- if config.get('model_type') not in supported or not isinstance(config.get('quantization') or config.get('quantization_config'),dict):
-  raise ValueError('지원되는 MLX 양자화 체크포인트를 선택해주세요. Qwen2/3, Llama, Mistral 계열을 지원합니다.')
- target=Path(directory)/'models'/(repo.replace('/','--')+'--'+commit[:12]+'.lmx');target.parent.mkdir(parents=True,exist_ok=True)
+ filename=args.get('filename','').strip()
+ if filename:
+  if not re.fullmatch(r'[A-Za-z0-9_.-]+\.gguf',filename):raise ValueError('저장소 안의 단일 GGUF 파일 이름을 입력해주세요.')
+  matches=[f for f in info.siblings if f.rfilename==filename]
+  if not matches:raise ValueError('저장소에 해당 GGUF 파일이 없습니다.')
+ else:
+  raise ValueError('실행 가능한 Qwen3.5 또는 LFM2 계열의 GGUF 파일을 선택해주세요. 현재 엔진은 일반 Qwen3 MLX 파일의 실행을 지원하지 않습니다.')
+ target=Path(directory)/'models'/(repo.replace('/','--')+'--'+Path(filename).stem+'--'+commit[:12]+'.lmx');target.parent.mkdir(parents=True,exist_ok=True)
  if target.exists():return {'name':target.stem,'path':str(target),'repo':repo,'revision':commit,'cached':True}
- needed=sum(s.size or 0 for s in HfApi().model_info(repo,revision=commit,files_metadata=True).siblings if s.rfilename.endswith('.safetensors'))
+ needed=sum(s.size or 0 for s in HfApi().model_info(repo,revision=commit,files_metadata=True).siblings if s.rfilename==filename)
  if needed and shutil.disk_usage(directory).free<needed*2+512*1024**2:raise ValueError('다운로드와 변환에 필요한 저장 공간이 부족합니다.')
  progress({'event':'model','stage':'download','repo':repo,'bytes':needed,'revision':commit})
- snapshot_download(repo,revision=commit,local_dir=folder,allow_patterns=['*.json','*.safetensors','*.jinja','*.model','LICENSE*','README.md'],max_workers=4)
+ checkpoint=hf_hub_download(repo,filename,revision=commit,local_dir=folder)
+ snapshot_download(repo,revision=commit,local_dir=folder,allow_patterns=['LICENSE*','README.md'],max_workers=2)
  progress({'event':'model','stage':'convert','repo':repo})
- process=subprocess.run([str(native_binary()),'convert',str(folder),str(target)],capture_output=True,text=True,timeout=3600)
+ process=subprocess.run([str(native_binary()),'convert',str(Path(checkpoint).resolve()),str(target)],capture_output=True,text=True,timeout=3600)
  if process.returncode:raise RuntimeError('LMX 변환 실패: '+process.stderr[-1200:])
  result=json.loads(process.stdout);result.update(name=target.stem,repo=repo,revision=commit)
  (target.with_suffix('.json')).write_text(json.dumps(result,ensure_ascii=False,indent=2))

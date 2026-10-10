@@ -35,7 +35,11 @@ fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
     if args.get(1).map(String::as_str)==Some("convert") {
         ensure!(args.len()==4, "usage: spartady-local-lmx convert CHECKPOINT_DIRECTORY OUTPUT.lmx");
-        let file=models::lmx_native_import::import_mlx(Path::new(&args[2]),Path::new(&args[3]),&mut |done,total| {eprintln!("{done}/{total}");true})?;
+        let source=Path::new(&args[2]);
+        let file=if source.is_file(){models::lmx_native_gguf::import_gguf(source,Path::new(&args[3]),&mut |done,total| {eprintln!("{done}/{total}");true})?}else{models::lmx_native_import::import_mlx(source,Path::new(&args[3]),&mut |done,total| {eprintln!("{done}/{total}");true})?};
+        if !models::lmx_engine::runnable(file.manifest.model.architecture){
+            std::fs::remove_file(&args[3])?;anyhow::bail!("Converted architecture is not executable by this runtime; choose Qwen3.5 or LFM2 GGUF");
+        }
         file.verify(&mut |_,_|true)?;
         println!("{}",json!({"path":args[3],"identity":file.identity,"verified":true}));
         return Ok(());

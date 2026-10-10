@@ -36,6 +36,16 @@
       "source": "loom-core/src/models/local.rs",
       "sha256": "a7c82e6cefaffeb6d0fe389e80b31c223dc21bac491b369ef2744ae67911fd6b",
       "modifications": "Product-owned import CLI; exclude upstream tests; local no-follow helper subset"
+    },
+    {
+      "source": "loom-core/src/models/lmx_native_gguf.rs",
+      "sha256": "54ebfb1e6aa91c9e5fa1a2c533efca8f98d0f952b817348ad1f5158ac61a1d1b",
+      "modifications": "Remove tests; gguf_mlx retains only tensor-name mapping"
+    },
+    {
+      "source": "loom-core/src/models/gguf_mlx.rs",
+      "sha256": "3a8f31a75cb295a3f8ada7f44001ddcca098a80c2e93825287eccdca65c7f8ed",
+      "modifications": "Remove tests; gguf_mlx retains only tensor-name mapping"
     }
   ],
   "runtime_dependency_on_loom": false

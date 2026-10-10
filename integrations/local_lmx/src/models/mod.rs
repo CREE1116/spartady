@@ -17,3 +17,6 @@ pub fn initialize_backend() -> anyhow::Result<()> {
 pub mod lmx_native_import;
 pub mod model_package;
 pub mod local;
+
+pub mod lmx_native_gguf;
+pub mod gguf_mlx;
