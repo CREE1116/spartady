@@ -20,7 +20,7 @@
     {
       "source": "loom-core/native/lmx/engine.cpp",
       "sha256": "c195441fde9f01cffcc7f1f76ecefffe4f08d44aa02ff8817a29bf7210c32962",
-      "modifications": "none"
+      "modifications": "Skip empty expert-pool allocation for dense models on CPU"
     },
     {
       "source": "loom-core/src/models/lmx_native_import.rs",

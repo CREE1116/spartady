@@ -41,6 +41,8 @@ jobs:
         env:
           CMAKE_BUILD_PARALLEL_LEVEL: '4'
         run: cargo build --release --locked --manifest-path integrations/local_lmx/Cargo.toml
+      - name: Verify real model conversion and CPU inference
+        run: python tests/native-smoke.py
       - name: Bundle independent runtime
         run: python desktop/scripts/package-runtime.py
       - name: Install UI dependencies

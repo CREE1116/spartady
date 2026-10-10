@@ -9,7 +9,7 @@ const root=process.env.SPARTADY_PROJECT_ROOT||path.resolve(__dirname,'../..');
 const resourceDir=app.isPackaged?path.join(process.resourcesPath,'runtime'):path.join(root,'desktop/runtime');
 if(process.env.SPARTADY_DATA_DIR)app.setPath('userData',path.resolve(process.env.SPARTADY_DATA_DIR));
 let window,worker;let next=0;const pending=new Map();let quitting=false;
-const methods=new Set(['bootstrap','settings','save_exam','delete_exam','budget','plan','note','notebook','save_notebook','transcribe','tutor','quiz','grade','enrich','capture_records','install_model','setup_asr']);
+const methods=new Set(['bootstrap','settings','save_exam','delete_exam','budget','plan','note','notebook','save_notebook','transcribe','tutor','quiz','grade','enrich','capture_records','install_model','setup_asr','learning_session','sessions']);
 function trusted(event){if(!window||event.sender!==window.webContents||event.senderFrame!==window.webContents.mainFrame)throw Error('허용되지 않은 창입니다.');}
 function request(method,args){return new Promise((resolve,reject)=>{
   if(!worker||worker.exitCode!==null)return reject(Error('학습 엔진이 종료되었습니다. 앱을 다시 열어주세요.'));

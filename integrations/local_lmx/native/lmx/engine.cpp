@@ -938,6 +938,8 @@ struct Engine {
     // memory, integrated GPUs): the CPU then reads experts from the file straight into the
     // slots, from several threads, with no staging copy. Otherwise they are device buffers.
     void allocate_pools() {
+        // Dense models have no expert buffers; CPU allocation of an empty context is null.
+        if (pools.empty()) return;
         bool mapped = false;
         if (gpu_dev) {
             ggml_backend_dev_props props{};
